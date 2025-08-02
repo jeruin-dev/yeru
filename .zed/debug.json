@@ -1,0 +1,180 @@
+[
+  {
+    "label": "Debug GUI App (GDB)",
+    "build": {
+      "command": "cmake",
+      "args": ["--build", "build", "--config", "Debug"],
+      "cwd": "$ZED_WORKTREE_ROOT"
+    },
+    "program": "$ZED_WORKTREE_ROOT/build/app",
+    "request": "launch",
+    "args": [],
+    "env": {
+      "DISPLAY": ":0",
+      "WAYLAND_DISPLAY": "wayland-0",
+      "XDG_SESSION_TYPE": "x11",
+      "GDK_BACKEND": "x11",
+      "QT_QPA_PLATFORM": "xcb",
+      "G_DEBUG": "fatal-warnings",
+      "GTK_DEBUG": "interactive",
+      "WEBKIT_DISABLE_SANDBOX": "1"
+    },
+    "console": "integratedTerminal",
+    "stopOnEntry": false,
+    "adapter": "GDB",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "setupCommands": [
+      {
+        "description": "Enable pretty-printing for gdb",
+        "text": "-enable-pretty-printing",
+        "ignoreFailures": true
+      },
+      {
+        "description": "Set Disassembly Flavor to Intel",
+        "text": "-gdb-set disassembly-flavor intel",
+        "ignoreFailures": true
+      },
+      {
+        "description": "Follow child processes",
+        "text": "-gdb-set follow-fork-mode child",
+        "ignoreFailures": true
+      }
+    ]
+  },
+  {
+    "label": "Debug GUI App (Non-Stop Mode)",
+    "build": {
+      "command": "cmake",
+      "args": ["--build", "build", "--config", "Debug"],
+      "cwd": "$ZED_WORKTREE_ROOT"
+    },
+    "program": "$ZED_WORKTREE_ROOT/build/app",
+    "request": "launch",
+    "args": [],
+    "env": {
+      "DISPLAY": ":0",
+      "WAYLAND_DISPLAY": "wayland-0",
+      "XDG_SESSION_TYPE": "x11",
+      "GDK_BACKEND": "x11",
+      "WEBKIT_DISABLE_SANDBOX": "1",
+      "G_SLICE": "always-malloc",
+      "G_DEBUG": "gc-friendly"
+    },
+    "console": "externalTerminal",
+    "stopOnEntry": true,
+    "adapter": "GDB",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "setupCommands": [
+      {
+        "description": "Enable non-stop mode",
+        "text": "-gdb-set non-stop on",
+        "ignoreFailures": true
+      },
+      {
+        "description": "Enable target-async",
+        "text": "-gdb-set target-async on",
+        "ignoreFailures": true
+      },
+      {
+        "description": "Enable pretty-printing",
+        "text": "-enable-pretty-printing",
+        "ignoreFailures": true
+      }
+    ]
+  },
+  {
+    "label": "Debug GUI App (Attach Mode)",
+    "request": "attach",
+    "program": "$ZED_WORKTREE_ROOT/build/app",
+    "processId": "${command:pickProcess}",
+    "adapter": "GDB",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "setupCommands": [
+      {
+        "description": "Enable pretty-printing for gdb",
+        "text": "-enable-pretty-printing",
+        "ignoreFailures": true
+      }
+    ]
+  },
+  {
+    "label": "Debug with Breakpoint in main",
+    "build": {
+      "command": "cmake",
+      "args": ["--build", "build", "--config", "Debug"],
+      "cwd": "$ZED_WORKTREE_ROOT"
+    },
+    "program": "$ZED_WORKTREE_ROOT/build/app",
+    "request": "launch",
+    "args": [],
+    "env": {
+      "DISPLAY": ":0",
+      "GDK_BACKEND": "x11",
+      "WEBKIT_DISABLE_SANDBOX": "1"
+    },
+    "console": "integratedTerminal",
+    "stopOnEntry": false,
+    "adapter": "GDB",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "setupCommands": [
+      {
+        "description": "Set breakpoint in main",
+        "text": "-break-insert main",
+        "ignoreFailures": false
+      },
+      {
+        "description": "Enable pretty-printing",
+        "text": "-enable-pretty-printing",
+        "ignoreFailures": true
+      }
+    ]
+  },
+  {
+    "label": "Debug GUI App (Headless Mode)",
+    "build": {
+      "command": "cmake",
+      "args": ["--build", "build", "--config", "Debug"],
+      "cwd": "$ZED_WORKTREE_ROOT"
+    },
+    "program": "xvfb-run",
+    "args": [
+      "-a",
+      "-s",
+      "-screen 0 1024x768x24",
+      "$ZED_WORKTREE_ROOT/build/app"
+    ],
+    "env": {
+      "WEBKIT_DISABLE_SANDBOX": "1",
+      "G_DEBUG": "fatal-warnings"
+    },
+    "console": "integratedTerminal",
+    "stopOnEntry": false,
+    "adapter": "GDB",
+    "cwd": "$ZED_WORKTREE_ROOT"
+  },
+  {
+    "label": "Debug with CodeLLDB (Experimental)",
+    "build": {
+      "command": "cmake",
+      "args": ["--build", "build", "--config", "Debug"],
+      "cwd": "$ZED_WORKTREE_ROOT"
+    },
+    "program": "$ZED_WORKTREE_ROOT/build/app",
+    "request": "launch",
+    "args": [],
+    "env": {
+      "DISPLAY": ":0",
+      "WEBKIT_DISABLE_SANDBOX": "1",
+      "RUST_BACKTRACE": "1"
+    },
+    "console": "integratedTerminal",
+    "stopOnEntry": false,
+    "adapter": "CodeLLDB",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "initCommands": [
+      "settings set target.process.follow-fork-mode child",
+      "settings set target.process.extra-startup-command QEnvironment",
+      "settings set target.env-vars DISPLAY=:0"
+    ]
+  }
+]
