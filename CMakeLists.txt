@@ -1,32 +1,32 @@
 cmake_minimum_required(VERSION 3.24)
-
 project(app LANGUAGES CXX VERSION 1.0.0)
 
-add_executable(${PROJECT_NAME} source/src/main.cc)
-
+# -----------------------------------------------------
+# Configuración de compilación
+# -----------------------------------------------------
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(saucer_serializer "Rflpp")
-
-# Debug configuration
+# Debug / Release flags
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -DDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 -march=x86-64 -mno-avx -DNDEBUG")
-
-# Set default build type to Debug if not specified
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
 
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 23 CXX_EXTENSIONS OFF CXX_STANDARD_REQUIRED ON)
+# -----------------------------------------------------
+# Saucer - configuración de frontend embebido
+# -----------------------------------------------------
+set(SAUCER_EMBED_FRONTEND ON)
+set(SAUCER_FRONTEND_DIR "${CMAKE_SOURCE_DIR}/source/front-end")
+set(saucer_serializer "Rflpp")  # opcional
 
-# --------------------------------------------------------------------------------------------------------
-# Link libraries
-# --------------------------------------------------------------------------------------------------------
-
-
+# -----------------------------------------------------
+# Dependencias vía CPM
+# -----------------------------------------------------
 include(cmake/CPM.cmake)
-
 
 CPMAddPackage(
   NAME           saucer
@@ -36,4 +36,14 @@ CPMAddPackage(
 
 FetchContent_MakeAvailable(saucer)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE saucer::saucer)
+# -----------------------------------------------------
+# Ejecutable principal
+# -----------------------------------------------------
+add_executable(${PROJECT_NAME}
+    source/src/main.cc
+)
+
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE
+    saucer::saucer
+)
